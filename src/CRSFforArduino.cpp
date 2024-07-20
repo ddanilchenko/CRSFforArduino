@@ -72,6 +72,22 @@ namespace sketchLayer
      */
     bool CRSFforArduino::begin()
     {
+#if CRSF_DEBUG_ENABLED > 0 && CRSF_DEBUG_ENABLE_VERSION_OUTPUT > 0
+        CRSF_DEBUG_SERIAL_PORT.println("[CRSF for Arduino | INFO]: ");
+        CRSF_DEBUG_SERIAL_PORT.print("- Version: ");
+        CRSF_DEBUG_SERIAL_PORT.print(CRSFFORARDUINO_VERSION);
+#if CRSFFORARDUINO_VERSION_IS_PRERELEASE > 0
+        CRSF_DEBUG_SERIAL_PORT.print("-");
+        CRSF_DEBUG_SERIAL_PORT.println(CRSFFORARDUINO_VERSION_PRE);
+#endif
+        CRSF_DEBUG_SERIAL_PORT.print("- Version Date: ");
+        CRSF_DEBUG_SERIAL_PORT.println(CRSFFORARDUINO_VERSION_DATE);
+#if CRSFFORARDUINO_VERSION_IS_PRERELEASE > 0
+        CRSF_DEBUG_SERIAL_PORT.print("- Build Date: ");
+        CRSF_DEBUG_SERIAL_PORT.println(CRSFFORARDUINO_VERSION_BUILD_DATE);
+#endif
+#endif
+
 #if CRSF_RC_ENABLED > 0 || CRSF_TELEMETRY_ENABLED > 0
         return this->SerialReceiver::begin();
 #else

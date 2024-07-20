@@ -125,6 +125,7 @@ and assign them to a switch on your controller. */
 #define CRSF_DEBUG_ENABLED                           1
 #define CRSF_DEBUG_SERIAL_PORT                       Serial
 #define CRSF_DEBUG_ENABLE_COMPATIBILITY_TABLE_OUTPUT 1
+#define CRSF_DEBUG_ENABLE_VERSION_OUTPUT             1
 
 /* All warnings and asserts below this point are to ensure that the configuration is valid. */
 
