@@ -2,8 +2,8 @@
  * @file CFA_Config.hpp
  * @author Cassandra "ZZ Cat" Robinson (nicad.heli.flier@gmail.com)
  * @brief This is the configuration file for CRSF for Arduino.
- * @version 1.0.3
- * @date 2024-7-20
+ * @version 1.1.0-1.0.0
+ * @date 2024-7-21
  *
  * @copyright Copyright (c) 2024, Cassandra "ZZ Cat" Robinson. All rights reserved.
  *
@@ -36,11 +36,24 @@ namespace crsfForArduinoConfig
 /* CRSFforArduino version
 Versioning is done using Semantic Versioning 2.0.0.
 See https://semver.org/ for more information. */
-#define CRSFFORARDUINO_VERSION       "1.0.3"
-#define CRSFFORARDUINO_VERSION_DATE  "2024-7-20"
+#define CRSFFORARDUINO_VERSION       "1.1.0"
+#define CRSFFORARDUINO_VERSION_DATE  "2024-7-21"
 #define CRSFFORARDUINO_VERSION_MAJOR 1
-#define CRSFFORARDUINO_VERSION_MINOR 0
-#define CRSFFORARDUINO_VERSION_PATCH 3
+#define CRSFFORARDUINO_VERSION_MINOR 1
+#define CRSFFORARDUINO_VERSION_PATCH 0
+
+// This is set to 1 if the version is a pre-release version.
+#define CRSFFORARDUINO_VERSION_IS_PRERELEASE 1
+
+// These are the pre-release version details which are only used if CRSFFORARDUINO_VERSION_IS_PRERELEASE is set to 1.
+// NOTE: Pre-release versions are not recommended for production use.
+#if CRSFFORARDUINO_VERSION_IS_PRERELEASE == 1
+#define CRSFFORARDUINO_VERSION_PRE   "1.0.0"
+#define CRSFFORARDUINO_VERSION_BUILD_DATE "2024-7-21"
+#define CRSFFORARDUINO_VERSION_BUILD_MAJOR 1
+#define CRSFFORARDUINO_VERSION_BUILD_MINOR 0
+#define CRSFFORARDUINO_VERSION_BUILD_PATCH 0
+#endif
 
 /* Failsafe Options
 - CRSF_FAILSAFE_LQI_THRESHOLD: The minimum LQI value for the receiver to be considered connected.
