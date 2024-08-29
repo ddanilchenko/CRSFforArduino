@@ -33,7 +33,7 @@ using namespace hal;
 
 namespace serialReceiverLayer
 {
-    SerialReceiver::SerialReceiver()
+    SerialReceiver::SerialReceiver(): _linkIsUp(false), _lastChannelsPacket(0)
     {
 #if defined(ARDUINO_ARCH_STM32)
 #if defined(HAVE_HWSERIAL1)
@@ -72,7 +72,7 @@ namespace serialReceiverLayer
 #endif
     }
 
-    SerialReceiver::SerialReceiver(HardwareSerial *hwUartPort)
+    SerialReceiver::SerialReceiver(HardwareSerial *hwUartPort) : _linkIsUp(false), _lastChannelsPacket(0)
     {
         _uart = hwUartPort;
 
@@ -101,7 +101,7 @@ namespace serialReceiverLayer
 #endif
     }
 
-    SerialReceiver::SerialReceiver(HardwareSerial *hwUartPort, int8_t rxPin, int8_t txPin)
+    SerialReceiver::SerialReceiver(HardwareSerial *hwUartPort, int8_t rxPin, int8_t txPin) : _linkIsUp(false), _lastChannelsPacket(0)
     {
         _uart = hwUartPort;
 
@@ -130,6 +130,8 @@ namespace serialReceiverLayer
 
         _rxPin = serialReceiver._rxPin;
         _txPin = serialReceiver._txPin;
+        _linkIsUp = serialReceiver._linkIsUp;
+        _lastChannelsPacket= serialReceiver._lastChannelsPacket;
 
 #if CRSF_RC_ENABLED > 0
         _rcChannels = new rcChannels_t;
@@ -159,6 +161,8 @@ namespace serialReceiverLayer
             _txPin = serialReceiver._txPin;
 
             crsf = serialReceiver.crsf;
+            _linkIsUp = serialReceiver._linkIsUp;
+            _lastChannelsPacket = serialReceiver._lastChannelsPacket;
 
 #if CRSF_TELEMETRY_ENABLED > 0
             telemetry = serialReceiver.telemetry;
@@ -341,7 +345,8 @@ namespace serialReceiverLayer
     {
         while (_uart->available() > 0)
         {
-            if (crsf->receiveFrames((uint8_t)_uart->read()))
+            uint8_t byteReceived = (uint8_t)_uart->read();
+            if (crsf->receiveFrames(byteReceived))
             {
                 flushRemainingFrames();
 
@@ -368,10 +373,39 @@ namespace serialReceiverLayer
                     _rcChannelsCallback(_rcChannels);
                 }
 #endif
+                setLinkUp();
             }
+
+            if (_rawDataCallback != nullptr)
+            {
+                _rawDataCallback(byteReceived);
+            }
+            
         }
+        checkLinkDown();
     }
 #endif
+
+void SerialReceiver::setLinkDownCallback(linkDownCallback_t callback) { _linkDownCallback = callback; }
+void SerialReceiver::setLinkUpCallback(linkUpCallback_t callback) { _linkUpCallback = callback; }
+
+bool SerialReceiver::isLinkUp() const { return _linkIsUp; }
+
+void SerialReceiver::setLinkUp()
+{
+    if (!_linkIsUp && _linkUpCallback) _linkUpCallback();
+    _linkIsUp = true;
+    _lastChannelsPacket = millis();
+}
+
+void SerialReceiver::checkLinkDown()
+{
+    if (_linkIsUp && millis() - _lastChannelsPacket > CRSF_FAILSAFE_STAGE1_MS) {
+    if (_linkDownCallback) _linkDownCallback();
+    _linkIsUp = false;
+  }
+}
+
 
 #if CRSF_LINK_STATISTICS_ENABLED > 0
     void SerialReceiver::setLinkStatisticsCallback(linkStatisticsCallback_t callback)
@@ -390,6 +424,11 @@ namespace serialReceiverLayer
         }
     }
 #endif
+
+    void SerialReceiver::setRawDataCallback(rawDataCallback_t callback)
+    {
+        _rawDataCallback = callback;
+    }
 
 #if CRSF_RC_ENABLED > 0
     void SerialReceiver::setRcChannelsCallback(rcChannelsCallback_t callback)
