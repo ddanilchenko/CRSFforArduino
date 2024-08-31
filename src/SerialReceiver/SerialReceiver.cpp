@@ -161,6 +161,9 @@ namespace serialReceiverLayer
             crsf = serialReceiver.crsf;
             _linkIsUp = serialReceiver._linkIsUp;
             _lastChannelsPacket = serialReceiver._lastChannelsPacket;
+            _rawDataCallback = serialReceiver._rawDataCallback;
+            _linkUpCallback = serialReceiver._linkUpCallback;
+            _linkDownCallback = serialReceiver._linkDownCallback;
 
 #if CRSF_TELEMETRY_ENABLED > 0
             telemetry = serialReceiver.telemetry;
